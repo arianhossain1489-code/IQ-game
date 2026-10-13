@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Dash - IQ Game</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .card {
+            background-color: #1e1e1e;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #00e676;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        p {
+            color: #bbb;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .display-box {
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffab00;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            border-radius: 8px;
+            border: 2px solid #333;
+            background-color: #2a2a2a;
+            color: white;
+            text-align: center;
+            margin-bottom: 15px;
+            outline: none;
+        }
+        input[type="number"]:focus {
+            border-color: #00e676;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #00e676;
+            color: #121212;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>🧠 Brain Dash</h1>
+        <p id="instruction">Memorizza i numeri prima che scopaiano!</p>
+
+        <div id="display" class="display-box">Premi Inizia</div>
+
+        <input type="number" id="user-input" class="hidden" placeholder="Inserisci la risposta...">
+        
+        <button id="main-btn" onclick="startGame()">INIZIA GIOCO</button>
+
+        <div class="stats">
+            <span>Punti: <strong id="score" style="color:white;">0</strong></span>
+            <span>Livello: <strong id="level" style="color:white;">1</strong></span>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let level = 1;
+        let currentAnswer = "";
+        let isWaitingAnswer = false;
+
+        function startGame() {
+            if (isWaitingAnswer) {
+                checkAnswer();
+                return;
+            }
+
+            document.getElementById("user-input").classList.add("hidden");
+            document.getElementById("user-input").value = "";
+            document.getElementById("instruction").innerText = "Memorizza la sequenza!";
+            
+            // Genera sequenza casuale in base al livello
+            let digits = 2 + level;
+            currentAnswer = "";
+            for (let i = 0; i < digits; i++) {
+                currentAnswer += Math.floor(Math.random() * 9) + 1;
+            }
+
+            let display = document.getElementById("display");
+            display.innerText = currentAnswer;
+
+            // Tempo di memorizzazione dinamico (diventa più veloce salendo di livello)
+            let showTime = Math.max(1000, 3000 - (level * 200));
+
+            setTimeout(() => {
+                display.innerText = "???";
+                document.getElementById("instruction").innerText = "Scrivi la sequenza al contrario!";
+                document.getElementById("user-input").classList.remove("hidden");
+                document.getElementById("user-input").focus();
+                document.getElementById("main-btn").innerText = "INVIA RISPOSTA";
+                isWaitingAnswer = true;
+            }, showTime);
+        }
+
+        function checkAnswer() {
+            let userVal = document.getElementById("user-input").value;
+            // La sfida richiede di inserire la sequenza AL CONTRARIO per testare l'IQ
+            let reversedAnswer = currentAnswer.split("").reverse().join("");
+
+            if (userVal === reversedAnswer) {
+                score += 10 * level;
+                level++;
+                alert("Corretto! 🎉 Passi al livello " + level);
+            } else {
+                alert("Sbagliato! ❌ La risposta corretta era (al contrario): " + reversedAnswer);
+                score = 0;
+                level = 1;
+            }
+
+            document.getElementById("score").innerText = score;
+            document.getElementById("level").innerText = level;
+            document.getElementById("main-btn").innerText = "PROSSIMO LIVELLO";
+            document.getElementById("display").innerText = "Pronto?";
+            isWaitingAnswer = false;
+        }
+    </script>
+
+</body>
+</html>
+<link rel="manifest" href="manifest.json">
+
+
+
+
